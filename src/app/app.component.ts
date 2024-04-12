@@ -6,11 +6,18 @@ import { RouterOutlet } from '@angular/router';
   standalone: true,
   imports: [RouterOutlet],
   template: `
-    <h1>Welcome to {{title}}!</h1>
-
     <router-outlet />
   `,
-  styles: [],
+  styles: [`
+    :host {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      // background-color: #3b2c00;
+      background-color: #000;
+      color: #7bb368;
+    }
+  `],
 })
 export class AppComponent {
   title = 'ngx-resume';
