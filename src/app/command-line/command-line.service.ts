@@ -1,58 +1,9 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, NgZone, inject, ViewChild, ElementRef } from '@angular/core';
-import { Terminal } from '@xterm/xterm';
-import { FitAddon } from '@xterm/addon-fit';
-import { ANGULAR_LOGO, MESSAGE_OF_THE_DAY } from './static-messages';
-import { ParametricHeartComponent } from '../shared/components/parametric-heart/parametric-heart.component';
+import { Injectable } from '@angular/core';
 
-@Component({
-  selector: 'app-command-line',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ParametricHeartComponent
-  ],
-  template: `
-    <main>
-      <div class="crt">
-        <ngx-parametric-heart></ngx-parametric-heart>
-        <div #terminalDiv style="max-width: 720px; height: 100vh; overflow-y: hidden !important;"></div>
-      </div>
-    </main>
-  `,
-  styleUrl: './command-line.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+@Injectable({
+  providedIn: 'root'
 })
-export class CommandLineComponent {
-  @ViewChild('terminalDiv', { static: true }) terminalDiv!: ElementRef;
-  
-  zone = inject(NgZone);
-  fitAddon = new FitAddon();
-  terminal = new Terminal({
-    cursorBlink: true,
-    fontFamily: 'Cascadia Code, monospace',
-    fontSize: 16,
-    convertEol: true,
-    allowTransparency: true,
-    theme: {
-      background: 'rgba(0, 0, 0, 0)',
-      foreground: '#7bb368',
-    }
-  });
-
-  buffer = '';
-
-  ngAfterViewInit() {
-    this.zone.runOutsideAngular(() => {
-      this.terminal.loadAddon(this.fitAddon);
-      this.terminal.open(this.terminalDiv.nativeElement);
-      this.terminal.writeln(MESSAGE_OF_THE_DAY);
-      this.terminal.onData(data => this.handleInput(data));
-      this.fitAddon.fit();
-      this.prompt();
-      this.terminal.focus();
-    });
-  }
+export class CommandLineService {
 
   prompt() {
     this.terminal.write('/Users/ba5ik7/ngx-resume on feature/showCase is 📦  v0.0.1 via ⬢ v20.10.0 \n');

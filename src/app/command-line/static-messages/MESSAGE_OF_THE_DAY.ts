@@ -34,35 +34,6 @@ Type \x1B[1mhelp\x1B[0m for a list of commands.
 Happy exploring! Don't hesitate to type \x1B[1mhelp\x1B[0m to see all available commands.
 `;
 
-export const ANGULAR_LOGO = `
-                           .              .
-                       .,:l.              .c;'.
-                  .';cllll.                .cccc:,..
-              .,:llllllll.                  .cccc::::;'.
-          .;clllllllllll'                    .c::::::::::;'.
-          lllllllllllll'                      .:::::::::::::
-          llllllllllll'                        .::::::::::::
-          lllcccccccc,                          .:::::::::::
-          :ccccccccc,             ;:             .::::::;;;;
-          ,cccccccc;             ,::;             ':;;;;;;;,
-          .ccccccc;             '::::'             ';;;;;;;.
-          .cccccc:             .::::::.             ,;;;;;;.
-           ccccc:              ::::::::              ,;;;;;
-           ccc:;              ::::::::;;              ,;;;;
-           ::::              ;::::;;;;;;;              ;;;;
-           :::                                          ,,,
-           ;:                                            ,,
-           '                                              .
-
-
-                        ;;;;;;;;;;;,,,,,,,,,,,
-                       ,;;;;;;;;;,,,,,,,,,,,,,,
-                      ,;;;;;;;;,,,,,,,,,,,,,,,,'
-                         .;;,,,,,,,,,,,,,,,,.
-                             .,,,,,,,,,,'
-                                 ,,,,`;
-
-
 // export const MESSAGE_OF_THE_DAY = `               *     ,MMM8&&&.            *
 //                     MMMM88&&&&&    .
 //                    MMMM88&&&&&&&
