@@ -1,226 +1,119 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, NgZone, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, NgZone, inject, ViewChild, ElementRef } from '@angular/core';
+import { Terminal } from '@xterm/xterm';
+import { FitAddon } from '@xterm/addon-fit';
+import { ANGULAR_LOGO, MESSAGE_OF_THE_DAY } from './MESSAGE_OF_THE_DAY';
+import { ParametricHeartComponent } from '../shared/components/parametric-heart/parametric-heart.component';
 
 @Component({
   selector: 'app-command-line',
   standalone: true,
   imports: [
     CommonModule,
+    ParametricHeartComponent
   ],
-  templateUrl: './command-line.component.html' ,
+  template: `
+    <main>
+      <div class="crt">
+        <ngx-parametric-heart></ngx-parametric-heart>
+        <div #terminalDiv style="max-width: 720px; height: 100vh; overflow-y: hidden !important;"></div>
+      </div>
+    </main>
+  `,
   styleUrl: './command-line.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommandLineComponent {
+  @ViewChild('terminalDiv', { static: true }) terminalDiv!: ElementRef;
+
   zone = inject(NgZone);
-  ngOnInit(): void {
-    setTimeout(() => {
-        this.init();
-    }, 2000);
+  fitAddon = new FitAddon();
+  terminal = new Terminal({
+    cursorBlink: true,
+    fontFamily: 'Cascadia Code, monospace',
+    fontSize: 16,
+    convertEol: true,
+    allowTransparency: true,
+    theme: {
+      background: 'rgba(0, 0, 0, 0)',
+      foreground: '#7bb368',
+    }
+  });
 
-  }
+  buffer = '';
 
-  init() {
-    var koef = 1;
-    var canvas = document.getElementById('heart')! as HTMLCanvasElement;
-    var ctx = canvas.getContext('2d')!;
-    var width = (canvas.width = koef * innerWidth) + 350;
-    var height = (canvas.height = koef * innerHeight) - 350;
-    var rand = Math.random;
-    // ctx.fillStyle = 'rgba(0, 0, 0, 0)';
-    // ctx.fillRect(0, 0, width, height);
-
-    var myTimer: any;
-
-    window.addEventListener('resize', function () {
-      width = canvas.width = koef * innerWidth;
-      height = canvas.height = koef * innerHeight;
-
-      // ctx.fillRect(0, 0, width, height);
+  ngAfterViewInit() {
+    this.zone.runOutsideAngular(() => {
+      this.terminal.loadAddon(this.fitAddon);
+      this.terminal.open(this.terminalDiv.nativeElement);
+      this.terminal.writeln(MESSAGE_OF_THE_DAY);
+      this.terminal.onData(data => this.handleInput(data));
+      this.fitAddon.fit();
+      this.prompt();
+      this.terminal.focus();
     });
+  }
 
-    var traceCount = 180;
-    var pointsOrigin: number[][] = [];
-    var i;
-    var dr = 0.1;
-    for (i = 0; i < Math.PI * 2; i += dr)
-      pointsOrigin.push(this.scaleAndTranslate(this.heartPosition(i), 210, 13, 0, 0));
-    for (i = 0; i < Math.PI * 2; i += dr)
-      pointsOrigin.push(this.scaleAndTranslate(this.heartPosition(i), 150, 9, 0, 0));
-    for (i = 0; i < Math.PI * 2; i += dr)
-      pointsOrigin.push(this.scaleAndTranslate(this.heartPosition(i), 90, 5, 0, 0));
-    var heartPointsCount = pointsOrigin.length;
+  prompt() {
+    this.terminal.write('/Users/ba5ik7/ngx-resume on feature/showCase is 📦  v0.0.1 via ⬢ v20.10.0 \n');
+    this.terminal.write('$ '); // Write a new line and prompt symbol
+  }
 
-    var targetPoints: number[][] = [];
-    var pulse = function (kx: number, ky: number) {
-      for (i = 0; i < pointsOrigin.length; i++) {
-        targetPoints[i] = [];
-        targetPoints[i][0] = kx * pointsOrigin[i][0] + xPos;
-        targetPoints[i][1] = ky * pointsOrigin[i][1] + yPos;
+  handleInput(data: string) {
+    // Check if 'Enter' key was pressed
+    if (data === '\r') {
+      this.processCommand(this.buffer);
+      this.buffer = ''; // Reset buffer after processing
+      this.prompt();
+    } else if (data === '\x7f') { // Handle backspace
+      if (this.buffer.length > 0) {
+        this.buffer = this.buffer.substring(0, this.buffer.length - 1);
+        this.terminal.write('\b \b'); // Move cursor back, write space to erase, and move back again
       }
-    };
-
-    var e: string | any[] = [];
-
-    var config = {
-      traceK: 0.9,
-      timeDelta: 0.01,
-    };
-
-    var time = 0;
-    var loop = () => {
-      var n = -Math.cos(time);
-      pulse((1 + n) * 0.5, (1 + n) * 0.5);
-      time += (Math.sin(time) < 0 ? 9 : n > 0.8 ? 0.2 : 1) * config.timeDelta;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (i = e.length; i--; ) {
-        var u = e[i];
-        var q = targetPoints[u.q];
-        var dx = u.trace[0].x - q[0];
-        var dy = u.trace[0].y - q[1];
-        var length = Math.sqrt(dx * dx + dy * dy);
-        if (10 > length) {
-          if (0.95 < rand()) {
-            u.q = ~~(rand() * heartPointsCount);
-          } else {
-            if (0.99 < rand()) {
-              u.D *= -1;
-            }
-            u.q += u.D;
-            u.q %= heartPointsCount;
-            if (0 > u.q) {
-              u.q += heartPointsCount;
-            }
-          }
-        }
-        u.vx += (-dx / length) * u.speed;
-        u.vy += (-dy / length) * u.speed;
-        u.trace[0].x += u.vx;
-        u.trace[0].y += u.vy;
-        u.vx *= u.force;
-        u.vy *= u.force;
-        for (k = 0; k < u.trace.length - 1; ) {
-          var T = u.trace[k];
-          var N = u.trace[++k];
-          N.x -= config.traceK * (N.x - T.x);
-          N.y -= config.traceK * (N.y - T.y);
-        }
-        ctx.fillStyle = u.f;
-        for (k = 0; k < u.trace.length; k++) {
-          ctx.fillRect(u.trace[k].x, u.trace[k].y, 1, 1);
-        }
-      }
-      // ctx.fillStyle = 'rgba(0,0,0,1)';
-      // ctx.fillRect(u.trace[k].x, u.trace[k].y, 1, 1);
-      // for (i = u.trace.length; i--;) ctx.fillRect(targetPoints[i][0], targetPoints[i][1], 2, 2);
-
-      this.zone.runOutsideAngular(() => {
-        window.requestAnimationFrame(loop);
-      });
-    };
-
-    var xPos = width * 0.5;
-    var yPos = height * 0.5;
-    var timeX = 8000;
-    // var ramBGColor: string;
-    var ramSpeed = .2;
-    // var countReset = 0;
-    // var resetBG = true;
-
-    for (i = 0; i < heartPointsCount; i++) {
-      var x = rand() * width;
-      var y = rand() * height;
-      e[i] = {
-        vx: 0,
-        vy: 0,
-        R: 2,
-        speed: .4,
-        q: ~~(rand() * heartPointsCount),
-        D: 2 * (i % 2) - 1,
-        force: 0.2 * rand() + 0.7,
-        f:
-          'hsla(0,' +
-          ~~(40 * rand() + 60) +
-          '%,' +
-          ~~(60 * rand() + 20) +
-          '%,.3)',
-        trace: [],
-      };
-      for (var k = 0; k < traceCount; k++) e[i].trace[k] = { x: x, y: y };
+    } else {
+      this.buffer += data;
+      this.terminal.write(data);
     }
+  }
 
-    var resetTime = () => {
-      myTimer = setInterval(() => {
-        // ++countReset;
-        // if (countReset > 3) {
-        //   var tempNumC = this.getRandomInt(214, 314);
-        //   ramBGColor =
-        //     'hsla(' +
-        //     ~~tempNumC +
-        //     ',' +
-        //     ~~(35 * rand() + 65) +
-        //     '%,' +
-        //     ~~(10 * rand() + 15) +
-        //     '%,.1)';
-        //   countReset = 0;
-        //   resetBG = !resetBG;
-        //   console.log(resetBG);
-        // }
-        xPos = width * this.getRandomArbitary(0.2, 0.8);
-        yPos = height * this.getRandomArbitary(0.2, 0.8);
-        
-        // traceCount = this.getRandomInt(300, 500);
-        ramSpeed = this.getRandomInt(.1, 10);
-        
-        var ramShapeColor = this.getRandomInt(0, 360);
-        for (i = 0; i < heartPointsCount; i++) {
-          e[i].speed = ramSpeed;
-          e[i].f =
-            'hsla(' +
-            ~~ramShapeColor +
-            ',' +
-            ~~(40 * rand() + 60) +
-            '%,' +
-            ~~(60 * rand() + 20) +
-            '%,.1)';
-          //e[i].f = "hsla(" + ~~(getRandomInt(76, 141)) + "," + ~~(40 * rand() + 60) + "%," + ~~(60 * rand() + 20) + "%,.3)"
-        }
-        // timeX = this.getRandomInt(2000, 10000);
-        clearInterval(myTimer);
-        resetTime();
-      }, 10000);
+  processCommand(command: string) {
+    command = command.trim();
+    switch(command.toLowerCase()) {
+      case 'home':
+        this.terminal.writeln('\r');
+        this.terminal.clear();
+        this.terminal.writeln(MESSAGE_OF_THE_DAY);
+        break;
+      case 'clear':
+        this.terminal.writeln('\r');
+        this.terminal.clear();
+        break;
+      case 'help':
+        this.terminal.writeln('\r');
+        this.terminal.clear();
+        this.terminal.writeln('Available commands:');
+        this.terminal.writeln('  help - Show this help message');
+        this.terminal.writeln('  about - Show information about me');
+        this.terminal.writeln('  projects - List my past projects');
+        break;
+      case 'about':
+        this.terminal.clear();
+        this.terminal.writeln('\r');
+        this.terminal.writeln(ANGULAR_LOGO);
+        this.terminal.writeln('I am Wesley DuSell, a software engineer with BLAH BLAH BLAH experience...');
+        this.terminal.writeln('\r');
+        break;
+      case 'projects':
+        this.terminal.writeln('\r');
+        this.terminal.writeln('Past Projects:');
+        this.terminal.writeln('  - Vanguard: Worked on numerous financial services platforms...');
+        this.terminal.writeln('  - Editor.Js clone: An Angular implementation of the Editor.Js...');
+        this.terminal.writeln('  - Ngx-Workshop: A workshop creation tool featuring CMS...');
+        break;
+      default:
+        this.terminal.writeln(`\r`);
+        this.terminal.writeln(`No such command: ${command}`);
+        this.terminal.writeln(`Type help to show available commands `);
     }
-    resetTime();
-    loop();
-  }
-
-  scaleAndTranslate(pos: number[], sx: number, sy: number, dx: number, dy: number) {
-    // return [200*(dx + Math.sin(sx * pos[0])), 200*(dy + Math.cos(sy * pos[1]))];
-    // return [(dx + pos[0] * sx), 15*(dy + pos[1] * sy)];
-    return [dx + pos[0] * sx, dy + pos[1] * sy];
-  };
-
-  heartPosition(rad: number) {
-    // return [Math.cos(3 * rad) * Math.sin(rad), -(Math.cos(3 * rad) * Math.cos(rad))];
-    return [
-      Math.pow(Math.sin(rad), 3),
-      -(
-        15 * Math.cos(rad) -
-        5 * Math.cos(2 * rad) -
-        2 * Math.cos(3 * rad) -
-        Math.cos(4 * rad)
-      ),
-    ];
-  };
-
-
-  getRandomArbitary(min: number, max: number) {
-    return Math.random() * (max - min) + min;
-  }
-
-  getRandomInt(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+  }  
 }

@@ -1,9 +1,7 @@
 .crt {
   height: 100vh;
 }
-.crt::before,
-input::before,
-textarea::before {
+.crt::before {
   content: " ";
   display: block;
   position: absolute;
@@ -89,9 +87,7 @@ textarea::before {
 //   }
 // }
 
-.crt::after,
-input::after,
-textarea::after {
+.crt::after {
   content: " ";
   display: block;
   position: absolute;
@@ -103,7 +99,7 @@ textarea::after {
   opacity: 0;
   z-index: 2;
   pointer-events: none;
-  // animation: flicker 0.15s infinite;
+  // animation: flicker 0.15s infinite; // flicker effect is cool. But! It could be to annoying
 }
 
 @keyframes textShadow {
@@ -192,15 +188,13 @@ textarea::after {
       -2.6208764473832513px 0 1px rgba(255, 0, 80, 0.3), 0 0 3px;
   }
 }
-.crt,
-input,
-textarea {
+.crt {
   animation: textShadow 1.6s infinite;
 }
 
 @keyframes turn-on {
   0% {
-    // background-color: #000;
+    background-color: #FFF; // You can play with this color
     transform: scale(1, 0.8) translate3d(0, 0, 0);
     -webkit-filter: brightness(30);
     filter: brightness(30);
@@ -241,41 +235,4 @@ main {
   height: 100%;
   animation: turn-on 4s linear;
   animation-fill-mode: forwards;
-}
-
-// @keyframes overlay-anim{
-//   0%{
-//     visibility:hidden;
-//   }
-//   20%{
-//     visibility:hidden;
-//   }
-//   21%{
-//     visibility:visible;
-//   }
-//   100%{
-//     visibility:hidden;
-//   }
-// }
-
-// .overlay {
-//   color:#FFF;
-//   position:absolute;
-//   top:20px;
-//   left:20px;
-//   font-size:60px;
-//   //text-shadow:2px 2px black,-2px -2px black, -2px 2px black, 2px -2px black;
-//   visibility:hidden;
-//   pointer-events:none;
-//   animation:overlay-anim 5s linear;
-//   animation-fill-mode:forwards;
-// }
-
-
-
-#heart {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: transparent;
 }
