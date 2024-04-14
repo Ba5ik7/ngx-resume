@@ -26,7 +26,7 @@ export class CommandLineService {
   });
 
   init() {
-    console.log('Initializing terminal')
+    console.log('Initializing terminal');
     this.terminal.loadAddon(this.fitAddon);
     this.terminal.open(this.terminalDiv.value?.nativeElement);
     this.terminal.writeln(MESSAGE_OF_THE_DAY);

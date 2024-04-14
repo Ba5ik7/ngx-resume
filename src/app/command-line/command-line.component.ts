@@ -3,6 +3,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  NgZone,
+  inject,
   viewChild,
 } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -28,12 +30,14 @@ import { CommandLineService } from './command-line.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommandLineComponent {
+  zone = inject(NgZone);
   terminalSignal = viewChild<ElementRef>('terminalDiv');
 
   viewModel$ = combineLatest([toObservable(this.terminalSignal)]).pipe(
-    tap(
-      ([terminalDiv]) =>
-        terminalDiv && new CommandLineService(terminalDiv).init()
+    tap(([terminalDiv]) =>
+      this.zone.runOutsideAngular(
+        () => terminalDiv && new CommandLineService(terminalDiv).init()
+      )
     )
   );
 }
