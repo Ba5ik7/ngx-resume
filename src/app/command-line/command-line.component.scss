@@ -1,3 +1,9 @@
+.terminal-container {
+  max-width: 720px;
+  height: 100vh;
+  overflow-y: hidden !important;
+}
+
 .crt {
   height: 100vh;
 }
@@ -194,7 +200,7 @@
 
 @keyframes turn-on {
   0% {
-    background-color: #FFF; // You can play with this color
+    background-color: #fff; // You can play with this color
     transform: scale(1, 0.8) translate3d(0, 0, 0);
     -webkit-filter: brightness(30);
     filter: brightness(30);

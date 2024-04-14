@@ -1,9 +1,40 @@
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable } from '@angular/core';
+import { FitAddon } from '@xterm/addon-fit';
+import { Terminal } from '@xterm/xterm';
+import { BehaviorSubject } from 'rxjs';
+import { ANGULAR_LOGO, MESSAGE_OF_THE_DAY } from './static-messages';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class CommandLineService {
+  constructor(terminal: ElementRef) {
+    this.terminalDiv.next(terminal);
+  }
+
+  private buffer = '';
+  private readonly terminalDiv = new BehaviorSubject<ElementRef | null>(null);
+  private readonly fitAddon = new FitAddon();
+  private readonly terminal = new Terminal({
+    cursorBlink: true,
+    fontFamily: 'Cascadia Code, monospace',
+    fontSize: 16,
+    convertEol: true,
+    allowTransparency: true,
+    theme: {
+      background: 'rgba(0, 0, 0, 0)',
+      foreground: '#7bb368',
+    },
+  });
+
+  init() {
+    console.log('Initializing terminal')
+    this.terminal.loadAddon(this.fitAddon);
+    this.terminal.open(this.terminalDiv.value?.nativeElement);
+    this.terminal.writeln(MESSAGE_OF_THE_DAY);
+    this.terminal.onData((data) => this.handleInput(data));
+    this.fitAddon.fit();
+    this.prompt();
+    this.terminal.focus();
+  }
 
   prompt() {
     this.terminal.write('/Users/ba5ik7/ngx-resume on feature/showCase is 📦  v0.0.1 via ⬢ v20.10.0 \n');

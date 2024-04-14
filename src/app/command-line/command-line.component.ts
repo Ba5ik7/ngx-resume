@@ -1,119 +1,39 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, NgZone, inject, ViewChild, ElementRef } from '@angular/core';
-import { Terminal } from '@xterm/xterm';
-import { FitAddon } from '@xterm/addon-fit';
-import { ANGULAR_LOGO, MESSAGE_OF_THE_DAY } from './static-messages';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  viewChild,
+} from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { combineLatest, tap } from 'rxjs';
 import { ParametricHeartComponent } from '../shared/components/parametric-heart/parametric-heart.component';
+import { CommandLineService } from './command-line.service';
 
 @Component({
   selector: 'app-command-line',
   standalone: true,
-  imports: [
-    CommonModule,
-    ParametricHeartComponent
-  ],
+  imports: [CommonModule, ParametricHeartComponent],
   template: `
+    @if (viewModel$ | async; as vm) {
     <main>
       <div class="crt">
         <ngx-parametric-heart></ngx-parametric-heart>
-        <div #terminalDiv style="max-width: 720px; height: 100vh; overflow-y: hidden !important;"></div>
+        <div #terminalDiv class="terminal-container"></div>
       </div>
     </main>
+    }
   `,
   styleUrl: './command-line.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommandLineComponent {
-  @ViewChild('terminalDiv', { static: true }) terminalDiv!: ElementRef;
-  
-  zone = inject(NgZone);
-  fitAddon = new FitAddon();
-  terminal = new Terminal({
-    cursorBlink: true,
-    fontFamily: 'Cascadia Code, monospace',
-    fontSize: 16,
-    convertEol: true,
-    allowTransparency: true,
-    theme: {
-      background: 'rgba(0, 0, 0, 0)',
-      foreground: '#7bb368',
-    }
-  });
+  terminalSignal = viewChild<ElementRef>('terminalDiv');
 
-  buffer = '';
-
-  ngAfterViewInit() {
-    this.zone.runOutsideAngular(() => {
-      this.terminal.loadAddon(this.fitAddon);
-      this.terminal.open(this.terminalDiv.nativeElement);
-      this.terminal.writeln(MESSAGE_OF_THE_DAY);
-      this.terminal.onData(data => this.handleInput(data));
-      this.fitAddon.fit();
-      this.prompt();
-      this.terminal.focus();
-    });
-  }
-
-  prompt() {
-    this.terminal.write('/Users/ba5ik7/ngx-resume on feature/showCase is 📦  v0.0.1 via ⬢ v20.10.0 \n');
-    this.terminal.write('$ '); // Write a new line and prompt symbol
-  }
-
-  handleInput(data: string) {
-    // Check if 'Enter' key was pressed
-    if (data === '\r') {
-      this.processCommand(this.buffer);
-      this.buffer = ''; // Reset buffer after processing
-      this.prompt();
-    } else if (data === '\x7f') { // Handle backspace
-      if (this.buffer.length > 0) {
-        this.buffer = this.buffer.substring(0, this.buffer.length - 1);
-        this.terminal.write('\b \b'); // Move cursor back, write space to erase, and move back again
-      }
-    } else {
-      this.buffer += data;
-      this.terminal.write(data);
-    }
-  }
-
-  processCommand(command: string) {
-    command = command.trim();
-    switch(command.toLowerCase()) {
-      case 'home':
-        this.terminal.writeln('\r');
-        this.terminal.clear();
-        this.terminal.writeln(MESSAGE_OF_THE_DAY);
-        break;
-      case 'clear':
-        this.terminal.writeln('\r');
-        this.terminal.clear();
-        break;
-      case 'help':
-        this.terminal.writeln('\r');
-        this.terminal.clear();
-        this.terminal.writeln('Available commands:');
-        this.terminal.writeln('  help - Show this help message');
-        this.terminal.writeln('  about - Show information about me');
-        this.terminal.writeln('  projects - List my past projects');
-        break;
-      case 'about':
-        this.terminal.clear();
-        this.terminal.writeln('\r');
-        this.terminal.writeln(ANGULAR_LOGO);
-        this.terminal.writeln('I am Wesley DuSell, a software engineer with BLAH BLAH BLAH experience...');
-        this.terminal.writeln('\r');
-        break;
-      case 'projects':
-        this.terminal.writeln('\r');
-        this.terminal.writeln('Past Projects:');
-        this.terminal.writeln('  - Vanguard: Worked on numerous financial services platforms...');
-        this.terminal.writeln('  - Editor.Js clone: An Angular implementation of the Editor.Js...');
-        this.terminal.writeln('  - Ngx-Workshop: A workshop creation tool featuring CMS...');
-        break;
-      default:
-        this.terminal.writeln(`\r`);
-        this.terminal.writeln(`No such command: ${command}`);
-        this.terminal.writeln(`Type help to show available commands `);
-    }
-  }
+  viewModel$ = combineLatest([toObservable(this.terminalSignal)]).pipe(
+    tap(
+      ([terminalDiv]) =>
+        terminalDiv && new CommandLineService(terminalDiv).init()
+    )
+  );
 }
