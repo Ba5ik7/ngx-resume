@@ -11,6 +11,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { combineLatest, tap } from 'rxjs';
 import { ParametricHeartComponent } from '../shared/components/parametric-heart/parametric-heart.component';
 import { CommandLineService } from './command-line.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-command-line',
@@ -30,12 +31,13 @@ import { CommandLineService } from './command-line.service';
 })
 export class CommandLineComponent {
   zone = inject(NgZone);
+  router = inject(Router);
   terminalSignal = viewChild<ElementRef>('terminalDiv');
 
   viewModel$ = combineLatest([toObservable(this.terminalSignal)]).pipe(
     tap(([terminalDiv]) =>
       this.zone.runOutsideAngular(
-        () => terminalDiv && new CommandLineService(terminalDiv).init()
+        () => terminalDiv && new CommandLineService(terminalDiv, this.router).init()
       )
     )
   );

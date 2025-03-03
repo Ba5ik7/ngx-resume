@@ -1,12 +1,16 @@
-import { ElementRef, Injectable } from '@angular/core';
+import { ElementRef, inject, Injectable } from '@angular/core';
 import { FitAddon } from '@xterm/addon-fit';
 import { Terminal } from '@xterm/xterm';
 import { BehaviorSubject } from 'rxjs';
 import { ABOUT, HELP, MESSAGE_OF_THE_DAY, PROJECTS } from './static-messages';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class CommandLineService {
-  constructor(terminal: ElementRef) {
+  router: Router;
+
+  constructor(terminal: ElementRef, router: Router) {
+    this.router = router;
     this.terminalDiv.next(terminal);
   }
 
@@ -78,7 +82,8 @@ export class CommandLineService {
         break;
       case 'projects':
         this.terminal.clear();
-        this.terminal.writeln(PROJECTS);
+        this.router.navigate(['/projects']);
+        // this.terminal.writeln(PROJECTS);
         break;
       default:
         this.terminal.writeln(`\r`);

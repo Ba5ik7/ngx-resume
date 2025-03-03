@@ -1,7 +1,9 @@
+@use "@angular/material" as mat;
+
 /* You can add global styles to this file, and also import other style files */
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 @import url('https://fonts.cdnfonts.com/css/cascadia-code');
-                
+
 /* Document
    ========================================================================== */
 
@@ -9,7 +11,6 @@
  * 1. Correct the line height in all browsers.
  * 2. Prevent adjustments of font size after orientation changes in iOS.
  */
-
  html {
   line-height: 1.15; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
@@ -608,3 +609,146 @@ template {
 .xterm-viewport::-webkit-scrollbar-thumb {
   background: transparent;
 }
+
+
+body.light-mode {
+  color-scheme: light;
+  color: var(--mat-sys-on-surface);
+  background-color: var(--mat-sys-surface);
+}
+
+body.dark-mode {
+  color-scheme: dark;
+  color: var(--mat-sys-on-surface);
+  background-color: var(--mat-sys-surface);
+}
+
+body {
+  &.red-palette {
+    @include mat.theme(
+      (
+        color: mat.$red-palette,
+      )
+    );
+  }
+
+  &.green-palette {
+    @include mat.theme(
+      (
+        color: mat.$green-palette,
+      )
+    );
+  }
+
+  &.blue-palette {
+    @include mat.theme(
+      (
+        color: mat.$blue-palette,
+      )
+    );
+  }
+
+  &.yellow-palette {
+    @include mat.theme(
+      (
+        color: mat.$yellow-palette,
+      )
+    );
+  }
+
+  &.cyan-palette {
+    @include mat.theme(
+      (
+        color: mat.$cyan-palette,
+      )
+    );
+  }
+
+  &.magenta-palette {
+    @include mat.theme(
+      (
+        color: mat.$magenta-palette,
+      )
+    );
+  }
+
+  &.orange-palette {
+    @include mat.theme(
+      (
+        color: mat.$orange-palette,
+      )
+    );
+  }
+  &.chartreuse-palette {
+    @include mat.theme(
+      (
+        color: mat.$chartreuse-palette,
+      )
+    );
+  }
+  &.spring-green-palette {
+    @include mat.theme(
+      (
+        color: mat.$spring-green-palette,
+      )
+    );
+  }
+  &.azure-palette {
+    @include mat.theme(
+      (
+        color: mat.$azure-palette,
+      )
+    );
+  }
+  &.violet-palette {
+    @include mat.theme(
+      (
+        color: mat.$violet-palette,
+      )
+    );
+  }
+  &.rose-palette {
+    @include mat.theme(
+      (
+        color: mat.$rose-palette,
+      )
+    );
+  }
+}
+
+.flex-spacer {
+  flex-grow: 1;
+}
+
+@for $i from 0 through 24 {
+  .mat-elevation-z#{$i} {
+    @include mat.elevation($i);
+  }
+}
+
+@keyframes neonFadeIn {
+  0% {
+    opacity: 0;
+    color: #39ff14;
+    text-shadow: 0 0 10px #39ff14;
+  }
+  25% {
+    font-weight: 300;
+  }
+  50% {
+    opacity: 1;
+    font-weight: 500;
+  }
+  75% {
+    font-weight: 300;
+    text-shadow: none;
+  }
+  100% {
+    opacity: 1;
+    font-weight: 100;
+    text-shadow: none;
+  }
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
