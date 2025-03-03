@@ -1,0 +1,6 @@
+export const PROJECTS =`
+Past Projects:
+  - Vanguard: Worked on numerous financial services platforms...
+  - Editor.Js clone: An Angular implementation of the Editor.Js...
+  - Ngx-Workshop: A workshop creation tool featuring CMS..`;
+

@@ -1,4 +1,5 @@
-export const MESSAGE_OF_THE_DAY = `              *     ,MMM8&&&.            *
+export const MESSAGE_OF_THE_DAY = `
+              *     ,MMM8&&&.            *
                    MMMM88&&&&&    .
                   MMMM88&&&&&&&
       *           MMM88&&&&&&&&
@@ -19,7 +20,7 @@ _/\\_/\\_/\\_/\\__  _/_/\\_/\\__~__/_/\\_/\\_/\\_/\\_/\\_
 |  |  |  |  |(_(  |  |  (( |  |  |  |  |  |  |
 |  |  |  |  |  |  |  |  |\\)|  |  |  |  |  |  |
 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-Welcome to my Interactive Terminal
+Hey I'm Wes, thanks for stopping by.
 
 As a seasoned software engineer with 18 years of experience, I invite you 
 to explore my world of coding and projects through this command-line 

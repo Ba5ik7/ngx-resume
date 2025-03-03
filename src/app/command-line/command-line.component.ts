@@ -20,7 +20,7 @@ import { CommandLineService } from './command-line.service';
     @if (viewModel$ | async; as vm) {
     <main>
       <div class="crt">
-        <ngx-parametric-heart></ngx-parametric-heart>
+        <!-- <ngx-parametric-heart></ngx-parametric-heart> -->
         <div #terminalDiv class="terminal-container"></div>
       </div>
     </main>
