@@ -2,13 +2,12 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet],
-  template: `
+    selector: 'app-root',
+    imports: [RouterOutlet],
+    template: `
     <router-outlet />
   `,
-  styles: [`
+    styles: [`
     :host {
       display: flex;
       flex-direction: column;
@@ -17,7 +16,7 @@ import { RouterOutlet } from '@angular/router';
       background-color: #000;
       color: #7bb368;
     }
-  `],
+  `]
 })
 export class AppComponent {
   title = 'ngx-resume';

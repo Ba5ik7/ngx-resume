@@ -13,21 +13,20 @@ import { ParametricHeartComponent } from '../shared/components/parametric-heart/
 import { CommandLineService } from './command-line.service';
 
 @Component({
-  selector: 'app-command-line',
-  standalone: true,
-  imports: [CommonModule, ParametricHeartComponent],
-  template: `
+    selector: 'app-command-line',
+    imports: [CommonModule, ParametricHeartComponent],
+    template: `
     @if (viewModel$ | async; as vm) {
     <main>
       <div class="crt">
-        <!-- <ngx-parametric-heart></ngx-parametric-heart> -->
+        <ngx-parametric-heart></ngx-parametric-heart>
         <div #terminalDiv class="terminal-container"></div>
       </div>
     </main>
     }
   `,
-  styleUrl: './command-line.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styleUrl: './command-line.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CommandLineComponent {
   zone = inject(NgZone);
